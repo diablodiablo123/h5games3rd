@@ -1,0 +1,58 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+# Unity WebGL build files should be treated as binary
+*.wasm binary
+*.data binary
+*.mem binary
+*.unityweb binary
+
+# Web files
+*.html text eol=lf
+*.css text eol=lf
+*.js text eol=lf
+*.json text eol=lf
+
+# Image files
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webp binary
+
+# Audio files
+*.mp3 binary
+*.ogg binary
+*.wav binary
+
+# Font files
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+
+# Archive files
+*.zip binary
+*.rar binary
+*.7z binary
+
+# Unity specific
+*.mat text
+*.prefab text
+*.unity text
+*.asset text
+*.meta text
+*.shader text
+
+# Config files
+*.xml text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+
+# Large file handling
+*.bundle binary
+*.bin binary
+
+# Set default behavior for unknown files to binary
+* !text
