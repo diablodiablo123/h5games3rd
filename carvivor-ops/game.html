@@ -15,7 +15,7 @@
       .fullscreen-canvas {
         background: #242424;
         width: 100%;
-        height: 100%;
+        height: calc(100% - 50px); /* 留出 banner 广告空间 */
         position: absolute;
         top: 0px;
         left: 0px;
@@ -23,7 +23,7 @@
     </style>
   </head>
   <body>
-    <script type="application/javascript" src="/carrotsdk.js"></script>
+    <script type="application/javascript" src="https://play.delmagames.com/DelmaGameSDK2.0.js"></script>
 
     <canvas id="canvas" class="fullscreen-canvas"></canvas>
     <script src="./playgama-bridge.js"></script>
@@ -349,68 +349,92 @@
           });
       };
 
-      // advertisement
+      // advertisement - 使用 DelmaGameSDK 的 MiniGameAds
+      // 注意：window.showBanner 和 window.hideBanner 已由 DelmaGameSDK2.0.js 自动定义
+      
       window.getInterstitialState = function () {
-        if (bridge.advertisement.interstitialState) {
-          return bridge.advertisement.interstitialState;
-        } else {
-          return "";
-        }
+        return "loaded";
       };
 
       window.getIsBannerSupported = function () {
-        return bridge.advertisement.isBannerSupported.toString();
+        return "true";
       };
 
       window.getIsInterstitialSupported = function () {
-        return bridge.advertisement.isInterstitialSupported.toString();
+        return "true";
       };
 
       window.getMinimumDelayBetweenInterstitial = function () {
-        return bridge.advertisement.minimumDelayBetweenInterstitial.toString();
+        return "30";
       };
 
       window.setMinimumDelayBetweenInterstitial = function (options) {
-        bridge.advertisement.setMinimumDelayBetweenInterstitial(options);
+        // No-op
       };
 
       window.getIsRewardedSupported = function () {
-        return bridge.advertisement.isRewardedSupported.toString();
+        return "true";
       };
 
       window.getRewardedPlacement = function () {
-        if (bridge.advertisement.rewardedPlacement) {
-          return bridge.advertisement.rewardedPlacement;
-        } else {
-          return "";
-        }
-      };
-
-      window.showBanner = function (position, placement) {
-        bridge.advertisement.showBanner(position, placement);
-      };
-
-      window.hideBanner = function () {
-        bridge.advertisement.hideBanner();
+        return "";
       };
 
       window.showInterstitial = function (placement) {
-        bridge.advertisement.showInterstitial(placement);
+        if (window.MiniGameAds) {
+          MiniGameAds.showInterstitial({
+            beforeAd: () => {
+              sendMessageToUnity("OnInterstitialStateChanged", "opened");
+            },
+            afterAd: () => {
+              sendMessageToUnity("OnInterstitialStateChanged", "closed");
+            },
+            adBreakDone: (result) => {
+              console.log("Interstitial ad break done:", result);
+              sendMessageToUnity("OnInterstitialStateChanged", "closed");
+            },
+          }).catch((error) => {
+            console.error("Interstitial ad error:", error);
+            sendMessageToUnity("OnInterstitialStateChanged", "failed");
+          });
+        }
       };
 
       window.showRewarded = function (placement) {
-        bridge.advertisement.showRewarded(placement);
+        if (window.MiniGameAds) {
+          MiniGameAds.showRewarded({
+            beforeAd: () => {
+              sendMessageToUnity("OnRewardedStateChanged", "opened");
+            },
+            afterAd: () => {
+              sendMessageToUnity("OnRewardedStateChanged", "closed");
+            },
+            adBreakDone: (result) => {
+              console.log("Rewarded ad break done:", result);
+              sendMessageToUnity("OnRewardedStateChanged", "closed");
+            },
+            beforeReward: (showAdFn) => {
+              showAdFn();
+            },
+            adDismissed: () => {
+              sendMessageToUnity("OnRewardedStateChanged", "closed");
+            },
+            adViewed: () => {
+              sendMessageToUnity("OnRewardedStateChanged", "rewarded");
+            },
+          });
+        }
       };
 
       window.checkAdBlock = function () {
-        bridge.advertisement
-          .checkAdBlock()
-          .then((result) => {
-            sendMessageToUnity("OnCheckAdBlockCompleted", result.toString());
-          })
-          .catch((error) => {
-            sendMessageToUnity("OnCheckAdBlockCompleted", "false");
-          });
+        // Simple ad block check
+        const testAd = document.createElement("div");
+        testAd.innerHTML = "&nbsp;";
+        testAd.className = "adsbox";
+        document.body.appendChild(testAd);
+        const isBlocked = testAd.offsetHeight === 0;
+        document.body.removeChild(testAd);
+        sendMessageToUnity("OnCheckAdBlockCompleted", (!isBlocked).toString());
       };
 
       // social

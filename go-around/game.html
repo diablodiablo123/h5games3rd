@@ -1,0 +1,73 @@
+<!doctype html>
+<html>
+<head>
+    <meta name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover' />
+    <meta charset='utf-8'>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <link rel="manifest" href="manifest.json">
+    <style></style>
+    <title>Go Around</title>
+
+    <script>
+        (function () {
+          function noop() {}
+          function resolved(v) { return Promise.resolve(v); }
+
+          var memStore = {};
+          var safeStorage = {
+            getItem: function (k) {
+              try { return localStorage.getItem(k); } catch (e) { return memStore[k] || null; }
+            },
+            setItem: function (k, v) {
+              try { localStorage.setItem(k, v); } catch (e) { memStore[k] = String(v); }
+            },
+            removeItem: function (k) {
+              try { localStorage.removeItem(k); } catch (e) {}
+              delete memStore[k];
+            }
+          };
+
+          var famobi = window.famobi || {};
+          famobi.localStorage = famobi.localStorage || safeStorage;
+          famobi.onRequest = famobi.onRequest || noop;
+          famobi.hasFeature = famobi.hasFeature || function () { return false; };
+          famobi.getCurrentLanguage = famobi.getCurrentLanguage || function () {
+            return (navigator.language || "en").toLowerCase();
+          };
+          window.famobi = famobi;
+
+          var analytics = window.famobi_analytics || {};
+          analytics.trackEvent = analytics.trackEvent || function () { return resolved(null); };
+          window.famobi_analytics = analytics;
+
+          var scripts = [
+            "playcanvas-stable.min.js",
+            "__settings__.js",
+            "__modules__.js",
+            "__start__.js",
+            "__loading__.js"
+          ];
+
+          function loadSequentially(i) {
+            if (i >= scripts.length) return;
+            var s = document.createElement("script");
+            s.src = scripts[i];
+            s.onload = function () {
+              loadSequentially(i + 1);
+            };
+            s.onerror = function () {
+              console.error("脚本加载失败:", scripts[i]);
+            };
+            document.head.appendChild(s);
+          }
+
+          loadSequentially(0);
+        })();
+    </script>
+
+</head>
+<body>
+  <script src="https://play.delmagames.com/delmaGamesConfig.js"></script>
+  <script src="https://play.delmagames.com/delmaSplash.js"></script>
+</body>
+</html>

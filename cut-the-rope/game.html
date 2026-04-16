@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Cut the Rope</title>
+		<meta charset="utf-8" />
+		<meta name="viewport"
+			content="user-scalable=0, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, interactive-widget=resizes-content" />
+		<style>
+			body {
+				margin: 0px;
+				overflow: hidden;
+				background: black;
+			}
+			#error {
+				position: fixed;
+				top: 0;
+				left: 0;
+				right: 0;
+				padding: 12px;
+				color: #fff;
+				background: rgba(180, 30, 30, 0.9);
+				font-family: Arial, sans-serif;
+				font-size: 14px;
+				display: none;
+				z-index: 9999;
+			}
+		</style>
+		<script>
+			(function () {
+				var lang = (navigator.language || "en").toLowerCase().split("-")[0];
+				window.famobi = window.famobi || {
+					getCurrentLanguage: function () {
+						return null;
+					}
+				};
+
+				function showError(message) {
+					var box = document.getElementById("error");
+					if (!box) return;
+					box.textContent = message;
+					box.style.display = "block";
+				}
+
+				function startGame() {
+					if (!window.Ctrr || typeof window.Ctrr.main !== "function") {
+						showError("Ctrr.main 未找到，请确认 ctrr.js 可用。");
+						return;
+					}
+					window.Ctrr.main(window.famobi.getCurrentLanguage());
+				}
+
+				var s = document.createElement("script");
+				s.src = "ctrr.js";
+				s.onload = startGame;
+				s.onerror = function () {
+					showError("ctrr.js 加载失败，请确认文件存在。");
+				};
+				document.head.appendChild(s);
+			})();
+		</script>
+	</head>
+	<body>
+		<div id="error"></div>
+    <script src="https://play.delmagames.com/delmaGamesConfig.js"></script>
+    <script src="https://play.delmagames.com/delmaSplash.js"></script>
+	</body>
+</html>

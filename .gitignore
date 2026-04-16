@@ -1,51 +1,9 @@
-# Unity WebGL Build Files
-*.unitypackage
-*.unityweb
-*.data
-*.wasm
-*.js
-*.mem
-*.symbols.json
+# 默认忽略所有文件
+*
 
-# Build output directories
-Build/
-StreamingAssets/
-
-# OS generated files
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
-
-# IDE files
-.vs/
-.vscode/
-*.suo
-*.user
-*.userosscache
-*.sln.docstates
-
-# Package manager
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# Logs
-*.log
-logs/
-
-# Environment variables
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-# Temporary files
-*.tmp
-*.temp
-*.cache
+# 白名单：只保留广告接入相关文件
+!.gitignore
+!.gitattributes
+!*/
+!*/game.html
+!*/playgama-bridge-config.json

@@ -20,9 +20,10 @@
         background: #242424;
         align-self: center;
         width: 405;
-        height: 720;
+        height: calc(720 - 50px); /* 留出 banner 广告空间 */
         position: absolute;
         margin-inline: auto;
+        max-height: 100%
       }
       #loading-overlay {
         font-size: 20px;
@@ -141,10 +142,36 @@
         }, 100);
       }
 
-      window.addEventListener("pointerdown", () => {
-        window.focus();
-        canvas.focus();
+      // 输入优化：确保所有输入事件都能正确聚焦并快速响应
+      const inputEvents = ["pointerdown", "touchstart", "mousedown", "click"];
+      inputEvents.forEach((eventType) => {
+        window.addEventListener(
+          eventType,
+          (e) => {
+            window.focus();
+            canvas.focus();
+            // 阻止默认行为以减少输入延迟
+            if (eventType === "touchstart") {
+              e.preventDefault();
+            }
+          },
+          { passive: false }
+        );
       });
+
+      // 禁用双击缩放，提升触摸响应
+      let lastTouchEnd = 0;
+      document.addEventListener(
+        "touchend",
+        (e) => {
+          const now = Date.now();
+          if (now - lastTouchEnd <= 300) {
+            e.preventDefault();
+          }
+          lastTouchEnd = now;
+        },
+        false
+      );
 
       // initialization
       bridge
@@ -178,7 +205,7 @@
                 productName: "Mega Jump",
                 productVersion: "1.1.2",
                 // matchWebGLToCanvasSize: false, // Uncomment this to separately control WebGL canvas render size and DOM element size.
-                // devicePixelRatio: 1, // Uncomment this to override low DPI rendering on high DPI displays.
+                devicePixelRatio: window.devicePixelRatio || 1, // 启用高DPI渲染，提升画面清晰度
               },
               onUnityLoadingProgressChanged
             )

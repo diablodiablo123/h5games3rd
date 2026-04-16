@@ -8,6 +8,8 @@
   <title>FlyDrive</title>
   <link rel="stylesheet" href="TemplateData/style.css">
 
+  <!-- Google AdSense 已移除，使用 DelmaGameSDK 统一管理 -->
+
   <script>
     const overlayBackgroundColor = "";
     const progressBarFillColor = "";
@@ -45,7 +47,7 @@
 
 
 <body class="dark">
-	<script type="application/javascript" src="/carrotsdk.js"></script>
+	<script type="application/javascript" src="https://play.delmagames.com/DelmaGameSDK2.0.js"></script>
 
   <div id="unity-container" class="unity-desktop">
     <canvas id="unity-canvas"></canvas>
@@ -154,6 +156,94 @@
       window.focus();
       canvas.focus();
     });
+
+    // advertisement - 使用 DelmaGameSDK 的 MiniGameAds
+    // 注意：window.showBanner 和 window.hideBanner 已由 DelmaGameSDK2.0.js 自动定义
+    
+    window.getInterstitialState = function () {
+      return "loaded";
+    };
+
+    window.getIsBannerSupported = function () {
+      return "true";
+    };
+
+    window.getIsInterstitialSupported = function () {
+      return "true";
+    };
+
+    window.getMinimumDelayBetweenInterstitial = function () {
+      return "30";
+    };
+
+    window.setMinimumDelayBetweenInterstitial = function (options) {
+      // No-op
+    };
+
+    window.getIsRewardedSupported = function () {
+      return "true";
+    };
+
+    window.getRewardedPlacement = function () {
+      return "";
+    };
+
+    window.showInterstitial = function (placement) {
+      if (window.MiniGameAds) {
+        MiniGameAds.showInterstitial({
+          beforeAd: () => {
+            sendMessageToUnity("OnInterstitialStateChanged", "opened");
+          },
+          afterAd: () => {
+            sendMessageToUnity("OnInterstitialStateChanged", "closed");
+          },
+          adBreakDone: (result) => {
+            console.log("Interstitial ad break done:", result);
+            sendMessageToUnity("OnInterstitialStateChanged", "closed");
+          },
+        }).catch((error) => {
+          console.error("Interstitial ad error:", error);
+          sendMessageToUnity("OnInterstitialStateChanged", "failed");
+        });
+      }
+    };
+
+    window.showRewarded = function (placement) {
+      if (window.MiniGameAds) {
+        MiniGameAds.showRewarded({
+          beforeAd: () => {
+            sendMessageToUnity("OnRewardedStateChanged", "opened");
+          },
+          afterAd: () => {
+            sendMessageToUnity("OnRewardedStateChanged", "closed");
+          },
+          adBreakDone: (result) => {
+            console.log("Rewarded ad break done:", result);
+            sendMessageToUnity("OnRewardedStateChanged", "closed");
+          },
+          beforeReward: (showAdFn) => {
+            showAdFn();
+          },
+          adDismissed: () => {
+            sendMessageToUnity("OnRewardedStateChanged", "closed");
+          },
+          adViewed: () => {
+            sendMessageToUnity("OnRewardedStateChanged", "rewarded");
+          },
+        });
+      }
+    };
+
+    window.checkAdBlock = function () {
+      // Simple ad block check
+      const testAd = document.createElement("div");
+      testAd.innerHTML = "&nbsp;";
+      testAd.className = "adsbox";
+      document.body.appendChild(testAd);
+      const isBlocked = testAd.offsetHeight === 0;
+      document.body.removeChild(testAd);
+      sendMessageToUnity("OnCheckAdBlockCompleted", (!isBlocked).toString());
+    };
 
   </script>
     <script src="https://play.delmagames.com/delmaGamesConfig.js"></script>

@@ -1,0 +1,74 @@
+{
+	"platforms": {
+		"game_distribution": {
+			"gameId": "16e9f5a12cb245669bd36eed0698e108"
+		},
+		"telegram": {
+			"adsgramBlockId": ""
+		},
+		"y8": {
+			"gameId": "",
+			"adsenseId": "",
+			"channelId": ""
+		},
+		"lagged": {
+			"devId": "",
+			"publisherId": ""
+		},
+		"huawei": {
+			"appId": ""
+		},
+		"msn": {
+			"gameId": ""
+		},
+		"discord": {
+			"appId": ""
+		},
+		"gamepush": {
+			"projectId": "",
+			"publicToken": ""
+		},
+		"jio_games": {
+			"packageName": ""
+		},
+		"crazy_games": {
+			"xsollaProjectId": "",
+			"isSandbox": false,
+			"useUserToken": false
+		},
+		"facebook": {
+			"subscribeForNotificationsOnStart": true,
+			"sendAnalyticsEvents": false
+		},
+		"yandex": {
+			"useSignedData": false,
+			"sendAnalyticsEvents": false,
+			"disableLoadingLogo": true
+		},
+		"youtube": {
+			"sendAnalyticsEvents": false
+		}
+	},
+	"advertisement": {
+		"interstitial": {
+			"preloadOnStart": true
+		},
+		"rewarded": {
+			"preloadOnStart": true
+		},
+
+		"rewardedPlacement": "slot_unlock",
+		"interstitialPlacement": "between_levels",
+		"placementFallback": {
+			"rewarded": "slot_unlock",
+			"interstitial": "between_levels"
+		},
+
+		"useBuiltInErrorPopup": true,
+		"backfillId": ""
+	},
+	"payments": [],
+	"leaderboards": [],
+	"sendAnalyticsEvents": true,
+	"disableLoadingLogo": true
+}

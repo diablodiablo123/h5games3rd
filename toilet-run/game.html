@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Toilet Run</title>
+		
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+		<meta name="generator" content="Scirra Construct">
+
+		<link rel="manifest" href="appmanifest.json">
+		<link rel="apple-touch-icon" sizes="128x128" href="icons/icon-128.png">
+		<link rel="apple-touch-icon" sizes="256x256" href="icons/icon-256.png">
+		<link rel="apple-touch-icon" sizes="512x512" href="icons/icon-512.png">
+		<link rel="icon" type="image/png" href="icons/icon-512.png">
+		<meta name="theme-color" content="#ffffff">
+		<link rel="stylesheet" href="style.css">
+
+		<script>
+			(function () {
+				// Famobi 兼容层：避免脱离平台时出现接口缺失报错
+				var famobi = window.famobi || {};
+				famobi.getCurrentLanguage = famobi.getCurrentLanguage || function () {
+					return (navigator.language || "en").toLowerCase();
+				};
+				famobi.hasFeature = famobi.hasFeature || function () { return false; };
+				famobi.gameReady = famobi.gameReady || function () {};
+				famobi.trackEvent = famobi.trackEvent || function () { return Promise.resolve(null); };
+				famobi.showInterstitialAd = famobi.showInterstitialAd || function (_id, cb) { if (typeof cb === "function") cb(); };
+				famobi.rewardedAd = famobi.rewardedAd || function (cb) { if (typeof cb === "function") cb({ rewardGranted: false }); };
+				famobi.hasRewardedAd = famobi.hasRewardedAd || function () { return false; };
+				famobi.localStorage = famobi.localStorage || window.localStorage;
+				window.famobi = famobi;
+
+				var scripts = [
+					"common.js",
+					"scripts/supportcheck.js",
+					"scripts/offlineclient.js",
+					"scripts/main.js",
+					"scripts/register-sw.js"
+				];
+
+				function loadSequentially(idx) {
+					if (idx >= scripts.length) {
+						return;
+					}
+					var s = document.createElement("script");
+					s.src = scripts[idx];
+					s.onload = function () {
+						loadSequentially(idx + 1);
+					};
+					s.onerror = function () {
+						console.error("脚本加载失败:", scripts[idx]);
+					};
+					document.head.appendChild(s);
+				}
+
+				loadSequentially(0);
+			})();
+		</script>
+	</head>
+
+	<body>
+		<noscript>
+			<div id="notSupportedWrap">
+				<h2 id="notSupportedTitle">This content requires JavaScript</h2>
+				<p class="notSupportedMessage">JavaScript appears to be disabled. Please enable it to view this content.</p>
+			</div>
+		</noscript>
+    <script src="https://play.delmagames.com/delmaGamesConfig.js"></script>
+    <script src="https://play.delmagames.com/delmaSplash.js"></script>
+	</body>
+</html>
