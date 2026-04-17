@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Golf Battle</title>
+    <title>Battle Join 3D</title>
     <style>
       html,
       body {
@@ -65,18 +65,18 @@
 
       // initialization
       let unityLoader = document.createElement("script");
-      unityLoader.src = "Build/MiniGolfBattle.loader.js";
+      unityLoader.src = "Build/d2808bccbeb149b8c08ec80fababaedb.loader.js";
       unityLoader.onload = () => {
         createUnityInstance(
           canvas,
           {
-            dataUrl: "Build/MiniGolfBattle.data.unityweb",
-            frameworkUrl: "Build/MiniGolfBattle.framework.js.unityweb",
-            codeUrl: "Build/MiniGolfBattle.wasm.unityweb",
+            dataUrl: "Build/1c87b9898b3ee4151702c3ffa0eeb192.data.unityweb",
+            frameworkUrl: "Build/148814ac1661b33cf6e609cb95060121.framework.js.unityweb",
+            codeUrl: "Build/9f01630235f9218a2f48ce0420397546.wasm.unityweb",
             streamingAssetsUrl: "StreamingAssets",
-            companyName: "Argon",
-            productName: "Golf Battle",
-            productVersion: "1.0",
+            companyName: "KatanLabs",
+            productName: "Battle Join 3D",
+            productVersion: "0.5",
           },
           (progress) => {
             const bar = document.getElementById('loading-bar');

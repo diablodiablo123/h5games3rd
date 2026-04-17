@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en-us">
   <head>
     <meta charset="utf-8" />
@@ -142,7 +142,7 @@
         }, 100);
       }
 
-      // 输入优化：确保所有输入事件都能正确聚焦并快速响应
+      // Input optimization
       const inputEvents = ["pointerdown", "touchstart", "mousedown", "click"];
       inputEvents.forEach((eventType) => {
         window.addEventListener(
@@ -150,7 +150,7 @@
           (e) => {
             window.focus();
             canvas.focus();
-            // 阻止默认行为以减少输入延迟
+            // Prevent default to reduce input latency
             if (eventType === "touchstart") {
               e.preventDefault();
             }
@@ -159,7 +159,7 @@
         );
       });
 
-      // 禁用双击缩放，提升触摸响应
+      // Disable double-tap zoom
       let lastTouchEnd = 0;
       document.addEventListener(
         "touchend",
@@ -994,7 +994,5 @@
           });
       };
     </script>
-        <script src="https://play.delmagames.com/delmaGamesConfig.js"></script>
-        <script src="https://play.delmagames.com/delmaSplash.js"></script>
-  </body>
+        <script src="https://play.delmagames.com/delmaGamesConfig.js"></script>  </body>
 </html>
