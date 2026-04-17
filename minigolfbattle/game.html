@@ -133,26 +133,53 @@
       window.showInterstitial = function (placement) {
         if (window.MiniGameAds) {
           _interstitialState = "loading";
-          MiniGameAds.showInterstitial({
-            beforeAd: () => {
-              _interstitialState = "opened";
-              sendMessageToUnity("OnInterstitialStateChanged", "opened");
-            },
-            afterAd: () => {
-              _interstitialState = "closed";
-              sendMessageToUnity("OnInterstitialStateChanged", "closed");
-            },
-            adBreakDone: (result) => {
-              console.log("Interstitial ad break done:", result);
-              _interstitialState = "loaded";
-              sendMessageToUnity("OnInterstitialStateChanged", "closed");
-            },
-          }).catch((error) => {
-            console.error("Interstitial ad error:", error);
+          var _adCallbackFired = false;
+          function _interstitialDone() {
+            if (_adCallbackFired) return;
+            _adCallbackFired = true;
             _interstitialState = "loaded";
             sendMessageToUnity("OnInterstitialStateChanged", "closed");
-          });
+          }
+          // 安全超时：若2秒内广告无任何回调，自动放行游戏流程
+          var _safetyTimer = setTimeout(function () {
+            if (!_adCallbackFired) {
+              console.warn("[Ad] Interstitial timed out, resuming game.");
+              _interstitialDone();
+            }
+          }, 2000);
+          try {
+            var interstitialPromise = MiniGameAds.showInterstitial({
+              beforeAd: () => {
+                _adCallbackFired = true;
+                clearTimeout(_safetyTimer);
+                _interstitialState = "opened";
+                sendMessageToUnity("OnInterstitialStateChanged", "opened");
+              },
+              afterAd: () => {
+                clearTimeout(_safetyTimer);
+                _interstitialState = "closed";
+                sendMessageToUnity("OnInterstitialStateChanged", "closed");
+              },
+              adBreakDone: (result) => {
+                console.log("Interstitial ad break done:", result);
+                clearTimeout(_safetyTimer);
+                _interstitialDone();
+              },
+            });
+            if (interstitialPromise && typeof interstitialPromise.catch === "function") {
+              interstitialPromise.catch((error) => {
+                console.warn("[Ad] Interstitial not available:", error);
+                clearTimeout(_safetyTimer);
+                _interstitialDone();
+              });
+            }
+          } catch (e) {
+            console.warn("[Ad] Interstitial call failed:", e);
+            clearTimeout(_safetyTimer);
+            _interstitialDone();
+          }
         } else {
+          console.warn("[Ad] MiniGameAds not ready, skipping interstitial.");
           sendMessageToUnity("OnInterstitialStateChanged", "closed");
         }
       };

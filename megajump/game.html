@@ -499,12 +499,40 @@
 
       window.showInterstitial = function (placement) {
         if (bridge && bridge.advertisement) {
-          bridge.advertisement.showInterstitial(placement).catch((e) => {
-            console.warn("[Bridge] showInterstitial failed:", e);
+          var _adCallbackFired = false;
+          function _interstitialDone() {
+            if (_adCallbackFired) return;
+            _adCallbackFired = true;
             sendMessageToUnity("OnInterstitialStateChanged", "closed");
-          });
+          }
+          // 安全超时：若2秒内广告无任何回调，自动放行游戏流程
+          var _safetyTimer = setTimeout(function () {
+            if (!_adCallbackFired) {
+              console.warn("[Ad] Interstitial timed out, resuming game.");
+              _interstitialDone();
+            }
+          }, 2000);
+          try {
+            var interstitialPromise = bridge.advertisement.showInterstitial(placement);
+            if (interstitialPromise && typeof interstitialPromise.catch === "function") {
+              interstitialPromise
+                .then(() => {
+                  clearTimeout(_safetyTimer);
+                  _adCallbackFired = true;
+                })
+                .catch((e) => {
+                  console.warn("[Ad] Interstitial not available:", e);
+                  clearTimeout(_safetyTimer);
+                  _interstitialDone();
+                });
+            }
+          } catch (e) {
+            console.warn("[Ad] Interstitial call failed:", e);
+            clearTimeout(_safetyTimer);
+            _interstitialDone();
+          }
         } else {
-          console.warn("[Bridge] bridge not initialized");
+          console.warn("[Ad] bridge not initialized, skipping interstitial.");
           sendMessageToUnity("OnInterstitialStateChanged", "closed");
         }
       };
