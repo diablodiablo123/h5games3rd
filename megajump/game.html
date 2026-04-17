@@ -519,6 +519,7 @@
                 .then(() => {
                   clearTimeout(_safetyTimer);
                   _adCallbackFired = true;
+                  sendMessageToUnity("OnInterstitialStateChanged", "closed");
                 })
                 .catch((e) => {
                   console.warn("[Ad] Interstitial not available:", e);
@@ -539,12 +540,40 @@
 
       window.showRewarded = function (placement) {
         if (bridge && bridge.advertisement) {
-          bridge.advertisement.showRewarded(placement).catch((e) => {
-            console.warn("[Bridge] showRewarded failed:", e);
-            sendMessageToUnity("OnRewardedStateChanged", "closed");
-          });
+          var _rewardCallbackFired = false;
+          function _rewardedDone(state) {
+            if (_rewardCallbackFired) return;
+            _rewardCallbackFired = true;
+            sendMessageToUnity("OnRewardedStateChanged", state || "closed");
+          }
+          // 安全超时：若2秒内广告无任何回调，自动放行游戏流程
+          var _safetyTimer = setTimeout(function () {
+            if (!_rewardCallbackFired) {
+              console.warn("[Ad] Rewarded timed out, resuming game.");
+              _rewardedDone("closed");
+            }
+          }, 2000);
+          try {
+            var rewardedPromise = bridge.advertisement.showRewarded(placement);
+            if (rewardedPromise && typeof rewardedPromise.catch === "function") {
+              rewardedPromise
+                .then(() => {
+                  clearTimeout(_safetyTimer);
+                  _rewardCallbackFired = true;
+                })
+                .catch((e) => {
+                  console.warn("[Ad] Rewarded not available:", e);
+                  clearTimeout(_safetyTimer);
+                  _rewardedDone("closed");
+                });
+            }
+          } catch (e) {
+            console.warn("[Ad] Rewarded call failed:", e);
+            clearTimeout(_safetyTimer);
+            _rewardedDone("closed");
+          }
         } else {
-          console.warn("[Bridge] bridge not initialized");
+          console.warn("[Ad] bridge not initialized, skipping rewarded.");
           sendMessageToUnity("OnRewardedStateChanged", "closed");
         }
       };

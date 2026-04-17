@@ -440,34 +440,62 @@
 
       window.showRewarded = function (placement) {
         if (window.MiniGameAds) {
-          var rewardedPromise = MiniGameAds.showRewarded({
-            beforeAd: () => {
-              sendMessageToUnity("OnRewardedStateChanged", "opened");
-            },
-            afterAd: () => {
-              sendMessageToUnity("OnRewardedStateChanged", "closed");
-            },
-            adBreakDone: (result) => {
-              console.log("Rewarded ad break done:", result);
-              sendMessageToUnity("OnRewardedStateChanged", "closed");
-            },
-            beforeReward: (showAdFn) => {
-              showAdFn();
-            },
-            adDismissed: () => {
-              sendMessageToUnity("OnRewardedStateChanged", "closed");
-            },
-            adViewed: () => {
-              sendMessageToUnity("OnRewardedStateChanged", "rewarded");
-            },
-          });
-          if (rewardedPromise && typeof rewardedPromise.catch === "function") {
-            rewardedPromise.catch((error) => {
-              console.error("Rewarded ad error:", error);
-              sendMessageToUnity("OnRewardedStateChanged", "closed");
+          var _rewardCallbackFired = false;
+          function _rewardedDone(state) {
+            if (_rewardCallbackFired) return;
+            _rewardCallbackFired = true;
+            sendMessageToUnity("OnRewardedStateChanged", state || "closed");
+          }
+          // 安全超时：若2秒内广告无任何回调，自动放行游戏流程
+          var _safetyTimer = setTimeout(function () {
+            if (!_rewardCallbackFired) {
+              console.warn("[Ad] Rewarded timed out, resuming game.");
+              _rewardedDone("closed");
+            }
+          }, 2000);
+          try {
+            var rewardedPromise = MiniGameAds.showRewarded({
+              beforeAd: () => {
+                _rewardCallbackFired = true;
+                clearTimeout(_safetyTimer);
+                sendMessageToUnity("OnRewardedStateChanged", "opened");
+              },
+              afterAd: () => {
+                clearTimeout(_safetyTimer);
+                sendMessageToUnity("OnRewardedStateChanged", "closed");
+              },
+              adBreakDone: (result) => {
+                console.log("Rewarded ad break done:", result);
+                clearTimeout(_safetyTimer);
+                _rewardedDone("closed");
+              },
+              beforeReward: (showAdFn) => {
+                showAdFn();
+              },
+              adDismissed: () => {
+                clearTimeout(_safetyTimer);
+                _rewardedDone("closed");
+              },
+              adViewed: () => {
+                clearTimeout(_safetyTimer);
+                _rewardCallbackFired = true;
+                sendMessageToUnity("OnRewardedStateChanged", "rewarded");
+              },
             });
+            if (rewardedPromise && typeof rewardedPromise.catch === "function") {
+              rewardedPromise.catch((error) => {
+                console.warn("[Ad] Rewarded not available:", error);
+                clearTimeout(_safetyTimer);
+                _rewardedDone("closed");
+              });
+            }
+          } catch (e) {
+            console.warn("[Ad] Rewarded call failed:", e);
+            clearTimeout(_safetyTimer);
+            _rewardedDone("closed");
           }
         } else {
+          console.warn("[Ad] MiniGameAds not ready, skipping rewarded.");
           sendMessageToUnity("OnRewardedStateChanged", "closed");
         }
       };
