@@ -218,6 +218,7 @@
 
       /************  可选：安全封装，主动调用广告时使用  ************/
       window.showInterstitialSafe = async function () {
+        if (typeof gdsdk === "undefined") { console.warn("[GD] gdsdk not loaded"); return; }
         try {
           PauseMgr.pause();
           await gdsdk.showAd("interstitial");
@@ -228,11 +229,13 @@
         }
       };
       window.showRewardedSafe = async function () {
+        if (typeof gdsdk === "undefined") { console.warn("[GD] gdsdk not loaded"); return false; }
         try {
           PauseMgr.pause();
           return await gdsdk.showAd("rewarded");
         } catch (e) {
-          throw e;
+          console.warn("[GD] rewarded failed:", e);
+          return false;
         } finally {
           PauseMgr.resume();
         }

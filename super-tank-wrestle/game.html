@@ -190,13 +190,15 @@
 
 		/************  可选：安全封装，主动调用广告时使用  ************/
 		window.showInterstitialSafe = async function () {
+			if (typeof gdsdk === 'undefined') { console.warn('[GD] gdsdk not loaded'); return; }
 			try { PauseMgr.pause(); await gdsdk.showAd('interstitial'); }
 			catch (e) { console.warn('[GD] interstitial failed:', e); }
 			finally { PauseMgr.resume(); }
 		};
 		window.showRewardedSafe = async function () {
+			if (typeof gdsdk === 'undefined') { console.warn('[GD] gdsdk not loaded'); return false; }
 			try { PauseMgr.pause(); return await gdsdk.showAd('rewarded'); }
-			catch (e) { throw e; }
+			catch (e) { console.warn('[GD] rewarded failed:', e); return false; }
 			finally { PauseMgr.resume(); }
 		};
 
@@ -207,12 +209,6 @@
 	</script>
 
 	<script type="text/javascript">
-		function StartGame(url) {
-			var s = document.createElement('script');
-			s.src = 'index.js';  // ← 如果你的入口不是 index.js，这里改掉
-			s.async = false;
-			document.body.appendChild(s);
-		}
 		function loadLib(url) {
 			var script = document.createElement("script");
 			script.async = false;

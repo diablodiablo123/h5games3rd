@@ -100,9 +100,10 @@
 
       // advertisement - 使用 DelmaGameSDK 的 MiniGameAds
       // 注意：window.showBanner 和 window.hideBanner 已由 DelmaGameSDK2.0.js 自动定义
+      var _interstitialState = "loaded";
       
       window.getInterstitialState = function () {
-        return "loaded";
+        return _interstitialState;
       };
 
       window.getIsBannerSupported = function () {
@@ -131,27 +132,34 @@
 
       window.showInterstitial = function (placement) {
         if (window.MiniGameAds) {
+          _interstitialState = "loading";
           MiniGameAds.showInterstitial({
             beforeAd: () => {
+              _interstitialState = "opened";
               sendMessageToUnity("OnInterstitialStateChanged", "opened");
             },
             afterAd: () => {
+              _interstitialState = "closed";
               sendMessageToUnity("OnInterstitialStateChanged", "closed");
             },
             adBreakDone: (result) => {
               console.log("Interstitial ad break done:", result);
+              _interstitialState = "loaded";
               sendMessageToUnity("OnInterstitialStateChanged", "closed");
             },
           }).catch((error) => {
             console.error("Interstitial ad error:", error);
-            sendMessageToUnity("OnInterstitialStateChanged", "failed");
+            _interstitialState = "loaded";
+            sendMessageToUnity("OnInterstitialStateChanged", "closed");
           });
+        } else {
+          sendMessageToUnity("OnInterstitialStateChanged", "closed");
         }
       };
 
       window.showRewarded = function (placement) {
         if (window.MiniGameAds) {
-          MiniGameAds.showRewarded({
+          var rewardedPromise = MiniGameAds.showRewarded({
             beforeAd: () => {
               sendMessageToUnity("OnRewardedStateChanged", "opened");
             },
@@ -172,6 +180,14 @@
               sendMessageToUnity("OnRewardedStateChanged", "rewarded");
             },
           });
+          if (rewardedPromise && typeof rewardedPromise.catch === "function") {
+            rewardedPromise.catch((error) => {
+              console.error("Rewarded ad error:", error);
+              sendMessageToUnity("OnRewardedStateChanged", "closed");
+            });
+          }
+        } else {
+          sendMessageToUnity("OnRewardedStateChanged", "closed");
         }
       };
 
@@ -468,6 +484,5 @@
       };
     </script>
     <script src="https://play.delmagames.com/delmaGamesConfig.js"></script>
-    <script src="https://play.delmagames.com/delmaSplash.js"></script>
   </body>
 </html>

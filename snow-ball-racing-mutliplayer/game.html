@@ -204,6 +204,50 @@
     </script>
     <script src="https://play.delmagames.com/delmaGamesConfig.js"></script>
     <script src="https://play.delmagames.com/delmaSplash.js"></script>
+    <script>
+      var _interstitialState = "loaded";
+      window.getInterstitialState = function () { return _interstitialState; };
+      window.getIsBannerSupported = function () { return "true"; };
+      window.getIsInterstitialSupported = function () { return "true"; };
+      window.getMinimumDelayBetweenInterstitial = function () { return "30"; };
+      window.setMinimumDelayBetweenInterstitial = function () {};
+      window.getIsRewardedSupported = function () { return "true"; };
+      window.getRewardedPlacement = function () { return ""; };
+      window.showInterstitial = function () {
+        if (window.MiniGameAds) {
+          _interstitialState = "loading";
+          MiniGameAds.showInterstitial({
+            beforeAd: function () { _interstitialState = "opened"; },
+            afterAd: function () { _interstitialState = "closed"; },
+            adBreakDone: function () { _interstitialState = "loaded"; },
+          }).catch(function (e) { console.warn("[Ads] interstitial failed:", e); _interstitialState = "loaded"; });
+        }
+      };
+      window.showRewarded = function () {
+        if (window.MiniGameAds) {
+          var rewardedPromise = MiniGameAds.showRewarded({
+            beforeAd: function () {},
+            afterAd: function () {},
+            adBreakDone: function () {},
+            beforeReward: function (showAdFn) { showAdFn(); },
+            adDismissed: function () {},
+            adViewed: function () {},
+          });
+          if (rewardedPromise && typeof rewardedPromise.catch === "function") {
+            rewardedPromise.catch(function (e) { console.warn("[Ads] rewarded failed:", e); });
+          }
+        }
+      };
+      window.checkAdBlock = function () {
+        var testAd = document.createElement("div");
+        testAd.innerHTML = "&nbsp;";
+        testAd.className = "adsbox";
+        document.body.appendChild(testAd);
+        var isBlocked = testAd.offsetHeight === 0;
+        document.body.removeChild(testAd);
+        return !isBlocked;
+      };
+    </script>
 </body>
 
 </html>

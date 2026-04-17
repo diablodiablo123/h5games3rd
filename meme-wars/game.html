@@ -177,6 +177,10 @@
           window["MiniGameAds"].showInterstitial().then(() => {
             cc.audioEngine.setMusicVolume(1);
             cc.audioEngine.setEffectsVolume(1);
+          }).catch((e) => {
+            console.warn("[Ads] interstitial failed:", e);
+            cc.audioEngine.setMusicVolume(1);
+            cc.audioEngine.setEffectsVolume(1);
           });
         } else {
           cc.audioEngine.setMusicVolume(1);
@@ -288,6 +292,34 @@
             }
           }
         );
+
+        // Standard ad API
+        window.getInterstitialState = function () { return "loaded"; };
+        window.getIsInterstitialSupported = function () { return "true"; };
+        window.getIsRewardedSupported = function () { return "true"; };
+        window.getMinimumDelayBetweenInterstitial = function () { return "30"; };
+        window.showInterstitial = function () {
+          if (typeof window["MiniGameAds"] !== "undefined") {
+            window["MiniGameAds"].showInterstitial().catch((e) => console.warn("[Ads] interstitial failed:", e));
+          }
+        };
+        window.showRewarded = function () {
+          if (typeof window["MiniGameAds"] !== "undefined") {
+            var rewardedPromise = window["MiniGameAds"].showRewarded();
+            if (rewardedPromise && typeof rewardedPromise.catch === "function") {
+              rewardedPromise.catch((e) => console.warn("[Ads] rewarded failed:", e));
+            }
+          }
+        };
+        window.checkAdBlock = function () {
+          const testAd = document.createElement("div");
+          testAd.innerHTML = "&nbsp;";
+          testAd.className = "adsbox";
+          document.body.appendChild(testAd);
+          const isBlocked = testAd.offsetHeight === 0;
+          document.body.removeChild(testAd);
+          window.dispatchEvent(new CustomEvent("adBlockResult", { detail: !isBlocked }));
+        };
       })();
     </script>
         <script src="https://play.delmagames.com/delmaGamesConfig.js"></script>

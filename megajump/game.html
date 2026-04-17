@@ -482,19 +482,43 @@
       };
 
       window.showBanner = function (position, placement) {
-        bridge.advertisement.showBanner(position, placement);
+        if (bridge && bridge.advertisement) {
+          bridge.advertisement.showBanner(position, placement).catch((e) => console.warn("[Bridge] showBanner failed:", e));
+        } else {
+          console.warn("[Bridge] bridge not initialized");
+        }
       };
 
       window.hideBanner = function () {
-        bridge.advertisement.hideBanner();
+        if (bridge && bridge.advertisement) {
+          bridge.advertisement.hideBanner().catch((e) => console.warn("[Bridge] hideBanner failed:", e));
+        } else {
+          console.warn("[Bridge] bridge not initialized");
+        }
       };
 
       window.showInterstitial = function (placement) {
-        bridge.advertisement.showInterstitial(placement);
+        if (bridge && bridge.advertisement) {
+          bridge.advertisement.showInterstitial(placement).catch((e) => {
+            console.warn("[Bridge] showInterstitial failed:", e);
+            sendMessageToUnity("OnInterstitialStateChanged", "closed");
+          });
+        } else {
+          console.warn("[Bridge] bridge not initialized");
+          sendMessageToUnity("OnInterstitialStateChanged", "closed");
+        }
       };
 
       window.showRewarded = function (placement) {
-        bridge.advertisement.showRewarded(placement);
+        if (bridge && bridge.advertisement) {
+          bridge.advertisement.showRewarded(placement).catch((e) => {
+            console.warn("[Bridge] showRewarded failed:", e);
+            sendMessageToUnity("OnRewardedStateChanged", "closed");
+          });
+        } else {
+          console.warn("[Bridge] bridge not initialized");
+          sendMessageToUnity("OnRewardedStateChanged", "closed");
+        }
       };
 
       window.checkAdBlock = function () {

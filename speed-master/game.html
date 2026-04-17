@@ -54,9 +54,27 @@
 				tracking.EVENTS = tracking.EVENTS || {};
 				window.famobi_tracking = tracking;
 
-				window.addEventListener("load", function () {
-					if (typeof g_start === "function") g_start();
-				});
+			window.famobi_init = window.famobi_init || function noop() {};
+			window.getInterstitialState = function () { return "loaded"; };
+			window.getIsInterstitialSupported = function () { return "true"; };
+			window.getIsRewardedSupported = function () { return "true"; };
+			window.getMinimumDelayBetweenInterstitial = function () { return "30"; };
+			window.showInterstitial = function () {
+				if (window.MiniGameAds) {
+					window.MiniGameAds.showInterstitial().catch((e) => console.warn("[Ads] interstitial failed:", e));
+				}
+			};
+			window.showRewarded = function () {
+				if (window.MiniGameAds) {
+					var rewardedPromise = window.MiniGameAds.showRewarded();
+					if (rewardedPromise && typeof rewardedPromise.catch === "function") {
+						rewardedPromise.catch((e) => console.warn("[Ads] rewarded failed:", e));
+					}
+				}
+			};
+			window.addEventListener("load", function () {
+				if (typeof g_start === "function") g_start();
+			});
 			})();
 		</script>
 	</head>
