@@ -1,0 +1,39 @@
+{
+    "platforms": {
+        "game_distribution": {
+            "gameId": "eb3160e4ebf3451a9d2b508f6d905074"
+        },
+        "telegram": {
+            "adsgramBlockId": ""
+        },
+        "y8": {
+            "gameId": "",
+            "adsenseId": "",
+            "channelId": ""
+        },
+        "lagged": {
+            "devId": "",
+            "publisherId": ""
+        }
+    },
+    "advertisement": {
+        "interstitial": {
+            "preloadOnStart": true
+        },
+        "rewarded": {
+            "preloadOnStart": true
+        }
+    },
+    "payments": [
+        {
+            "id": "test_product",
+            "playgama": {
+                "amount": 1
+            },
+            "playdeck": {
+                "amount": 1,
+                "description": "TEST PRODUCT"
+            }
+        }
+    ]
+}
