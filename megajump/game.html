@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en-us">
   <head>
     <meta charset="utf-8" />
@@ -53,6 +53,13 @@
         background: #9747ff;
       }
     </style>
+    <link rel="preconnect" href="https://play.delmagames.com" crossorigin>
+    <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com">
+    <link rel="dns-prefetch" href="https://googleads.g.doubleclick.net">
+    <link rel="preload" href="Build/MegaJumpWeb-Build.loader.js" as="script">
+    <link rel="preload" href="Build/MegaJumpWeb-Build.framework.js.unityweb.br" as="fetch" crossorigin>
+    <link rel="preload" href="Build/MegaJumpWeb-Build.wasm.unityweb.br" as="fetch" crossorigin>
+    <link rel="preload" href="Build/MegaJumpWeb-Build.data.unityweb.br" as="fetch" crossorigin>
   </head>
   <body>
     <script type="application/javascript" src="https://play.delmagames.com/DelmaGameSDK2.0.js"></script>
@@ -62,7 +69,7 @@
       <img id="icon" src="./icon.png" />
       <div id="progress-bar"><div id="progress-bar-fill"></div></div>
     </div>
-    <script src="./playgama-bridge.js"></script>
+    <script async src="./playgama-bridge.js"></script>
     <script>
       if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
         let meta = document.createElement("meta");
@@ -173,33 +180,18 @@
         false
       );
 
-      // initialization
-      bridge
-        .initialize()
-        .then(() => {
-          bridge.advertisement.on("banner_state_changed", (state) =>
-            sendMessageToUnity("OnBannerStateChanged", state)
-          );
-          bridge.advertisement.on("interstitial_state_changed", (state) =>
-            sendMessageToUnity("OnInterstitialStateChanged", state)
-          );
-          bridge.advertisement.on("rewarded_state_changed", (state) =>
-            sendMessageToUnity("OnRewardedStateChanged", state)
-          );
-          bridge.game.on("visibility_state_changed", (state) =>
-            sendMessageToUnity("OnVisibilityStateChanged", state)
-          );
-
-          let unityLoader = document.createElement("script");
-          unityLoader.src = "Build/MegaJumpWeb-Build.loader.js";
-          unityLoader.onload = () => {
-            createUnityInstance(
-              canvas,
-              {
-                dataUrl: "Build/MegaJumpWeb-Build.data.unityweb",
-                frameworkUrl: "Build/MegaJumpWeb-Build.framework.js.unityweb",
-                codeUrl: "Build/MegaJumpWeb-Build.wasm.unityweb",
-                symbolsUrl: "Build/MegaJumpWeb-Build.symbols.json.unityweb",
+      // Unity loader starts immediately - highest priority, don't wait for bridge
+      let unityLoader = document.createElement("script");
+      unityLoader.src = "Build/MegaJumpWeb-Build.loader.js";
+      unityLoader.onload = () => {
+        createUnityInstance(
+          canvas,
+          {
+            dataUrl: "Build/MegaJumpWeb-Build.data.unityweb.br",
+            frameworkUrl: "Build/MegaJumpWeb-Build.framework.js.unityweb.br",
+            codeUrl: "Build/MegaJumpWeb-Build.wasm.unityweb.br",
+            symbolsUrl: "Build/MegaJumpWeb-Build.symbols.json.unityweb",
+            compressionFormat: "brotli",
                 streamingAssetsUrl: "StreamingAssets",
                 companyName: "Iron Fox Games",
                 productName: "Mega Jump",
@@ -217,10 +209,37 @@
               .catch((error) => {
                 console.error(error);
               });
-          };
-          document.body.appendChild(unityLoader);
-        })
-        .catch((error) => console.error(error));
+      };
+      document.body.appendChild(unityLoader);
+
+      // Bridge initialization - async with polling wait (doesn't block Unity)
+      function initBridge() {
+        bridge.initialize().then(() => {
+          bridge.advertisement.on("banner_state_changed", (state) =>
+            sendMessageToUnity("OnBannerStateChanged", state)
+          );
+          bridge.advertisement.on("interstitial_state_changed", (state) =>
+            sendMessageToUnity("OnInterstitialStateChanged", state)
+          );
+          bridge.advertisement.on("rewarded_state_changed", (state) =>
+            sendMessageToUnity("OnRewardedStateChanged", state)
+          );
+          bridge.game.on("visibility_state_changed", (state) =>
+            sendMessageToUnity("OnVisibilityStateChanged", state)
+          );
+        }).catch((error) => console.error(error));
+      }
+      if (typeof bridge !== "undefined") {
+        initBridge();
+      } else {
+        let _bridgeCheck = setInterval(function() {
+          if (typeof bridge !== "undefined") {
+            clearInterval(_bridgeCheck);
+            initBridge();
+          }
+        }, 50);
+        setTimeout(function() { clearInterval(_bridgeCheck); }, 5000);
+      }
 
       // platform
       window.getPlatformId = function () {

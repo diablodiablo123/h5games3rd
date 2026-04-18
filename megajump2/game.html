@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en-us">
   <head>
     <meta charset="utf-8" />
@@ -54,6 +54,12 @@
       }
     </style>
     <link rel="preconnect" href="https://play.delmagames.com" crossorigin>
+    <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com">
+    <link rel="dns-prefetch" href="https://googleads.g.doubleclick.net">
+    <link rel="preload" href="Build/MegaJumpWeb-Build.loader.js" as="script">
+    <link rel="preload" href="Build/MegaJumpWeb-Build.framework.js.unityweb.br" as="fetch" crossorigin>
+    <link rel="preload" href="Build/MegaJumpWeb-Build.wasm.unityweb.br" as="fetch" crossorigin>
+    <link rel="preload" href="Build/MegaJumpWeb-Build.data.unityweb.br" as="fetch" crossorigin>
   </head>
   <body>
     <script async src="https://play.delmagames.com/DelmaGameSDK2.0.js"></script>
@@ -63,7 +69,7 @@
       <img id="icon" src="./icon.png" />
       <div id="progress-bar"><div id="progress-bar-fill"></div></div>
     </div>
-    <script src="./playgama-bridge.js"></script>
+    <script async src="./playgama-bridge.js"></script>
     <script>
       if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
         let meta = document.createElement("meta");
@@ -181,9 +187,10 @@
         createUnityInstance(
           canvas,
           {
-            dataUrl: "Build/MegaJumpWeb-Build.data.unityweb",
-            frameworkUrl: "Build/MegaJumpWeb-Build.framework.js.unityweb",
-            codeUrl: "Build/MegaJumpWeb-Build.wasm.unityweb",
+            dataUrl: "Build/MegaJumpWeb-Build.data.unityweb.br",
+            frameworkUrl: "Build/MegaJumpWeb-Build.framework.js.unityweb.br",
+            codeUrl: "Build/MegaJumpWeb-Build.wasm.unityweb.br",
+            compressionFormat: "brotli",
             symbolsUrl: "Build/MegaJumpWeb-Build.symbols.json.unityweb",
             streamingAssetsUrl: "StreamingAssets",
             companyName: "Iron Fox Games",
@@ -204,8 +211,8 @@
       };
       document.body.appendChild(unityLoader);
 
-      // Bridge initialization runs in parallel - doesn't block Unity loading
-      if (typeof bridge !== "undefined") {
+      // Bridge initialization - async with polling wait
+      function initBridge() {
         bridge.initialize().then(() => {
           bridge.advertisement.on("banner_state_changed", (state) =>
             sendMessageToUnity("OnBannerStateChanged", state)
@@ -220,6 +227,17 @@
             sendMessageToUnity("OnVisibilityStateChanged", state)
           );
         }).catch((error) => console.error(error));
+      }
+      if (typeof bridge !== "undefined") {
+        initBridge();
+      } else {
+        let _bridgeCheck = setInterval(function() {
+          if (typeof bridge !== "undefined") {
+            clearInterval(_bridgeCheck);
+            initBridge();
+          }
+        }, 50);
+        setTimeout(function() { clearInterval(_bridgeCheck); }, 5000);
       }
 
       // platform

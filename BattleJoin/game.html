@@ -22,6 +22,12 @@
       }
     </style>
     <link rel="preconnect" href="https://play.delmagames.com" crossorigin>
+    <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com">
+    <link rel="dns-prefetch" href="https://googleads.g.doubleclick.net">
+    <link rel="preload" href="Build/3932f3cfc91b005c4e28b2bc99112072.loader.js" as="script">
+    <link rel="preload" href="Build/148814ac1661b33cf6e609cb95060121.framework.js.unityweb" as="fetch" crossorigin>
+    <link rel="preload" href="Build/9f01630235f9218a2f48ce0420397546.wasm.unityweb" as="fetch" crossorigin>
+    <link rel="preload" href="Build/1c87b9898b3ee4151702c3ffa0eeb192.data.unityweb" as="fetch" crossorigin>
   </head>
   <body>
     <script async src="https://play.delmagames.com/DelmaGameSDK2.0.js"></script>
@@ -98,8 +104,8 @@
       };
       document.body.appendChild(unityLoader);
 
-      // advertisement - 使用 DelmaGameSDK �?MiniGameAds
-      // 注意：window.showBanner �?window.hideBanner 已由 DelmaGameSDK2.0.js 自动定义
+      // advertisement - 使用 DelmaGameSDK �?MiniGameAds
+      // 注意：window.showBanner �?window.hideBanner 已由 DelmaGameSDK2.0.js 自动定义
       var _interstitialState = "loaded";
       
       window.getInterstitialState = function () {

@@ -22,6 +22,12 @@
       }
     </style>
     <link rel="preconnect" href="https://play.delmagames.com" crossorigin>
+    <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com">
+    <link rel="dns-prefetch" href="https://googleads.g.doubleclick.net">
+    <link rel="preload" href="Build/MiniGolfBattle.loader.js" as="script">
+    <link rel="preload" href="Build/MiniGolfBattle.framework.js.unityweb.br" as="fetch" crossorigin>
+    <link rel="preload" href="Build/MiniGolfBattle.wasm.unityweb.br" as="fetch" crossorigin>
+    <link rel="preload" href="Build/MiniGolfBattle.data.unityweb.br" as="fetch" crossorigin>
   </head>
   <body>
     <script async src="https://play.delmagames.com/DelmaGameSDK2.0.js"></script>
@@ -49,6 +55,25 @@
 
       let canvas = document.getElementById("canvas");
 
+      // Dynamically adjust canvas height for banner when it appears
+      function adjustCanvasForBanner() {
+        let canvas = document.getElementById("canvas");
+        if (!canvas) return;
+        let banner = document.getElementById("banner-container");
+        if (banner && banner.offsetHeight > 0 && banner.style.display !== "none") {
+          canvas.style.height = "calc(100% - " + banner.offsetHeight + "px)";
+        } else {
+          canvas.style.height = "100%";
+        }
+      }
+      let bannerObs = new MutationObserver(adjustCanvasForBanner);
+      let _bc = document.getElementById("banner-container");
+      if (_bc) {
+        bannerObs.observe(_bc, { attributes: true, childList: true, subtree: true });
+        _bc.addEventListener("resize", adjustCanvasForBanner);
+      }
+      window.addEventListener("resize", adjustCanvasForBanner);
+
       // utils
       window.unityInstance = null;
 
@@ -70,9 +95,10 @@
         createUnityInstance(
           canvas,
           {
-            dataUrl: "Build/MiniGolfBattle.data.unityweb",
-            frameworkUrl: "Build/MiniGolfBattle.framework.js.unityweb",
-            codeUrl: "Build/MiniGolfBattle.wasm.unityweb",
+            dataUrl: "Build/MiniGolfBattle.data.unityweb.br",
+            frameworkUrl: "Build/MiniGolfBattle.framework.js.unityweb.br",
+            codeUrl: "Build/MiniGolfBattle.wasm.unityweb.br",
+            compressionFormat: "brotli",
             streamingAssetsUrl: "StreamingAssets",
             companyName: "Argon",
             productName: "Golf Battle",
@@ -98,8 +124,8 @@
       };
       document.body.appendChild(unityLoader);
 
-      // advertisement - 使用 DelmaGameSDK �?MiniGameAds
-      // 注意：window.showBanner �?window.hideBanner 已由 DelmaGameSDK2.0.js 自动定义
+      // advertisement - 使用 DelmaGameSDK �?MiniGameAds
+      // 注意：window.showBanner �?window.hideBanner 已由 DelmaGameSDK2.0.js 自动定义
       var _interstitialState = "loaded";
       
       window.getInterstitialState = function () {

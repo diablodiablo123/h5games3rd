@@ -5,6 +5,8 @@
 		<meta charset="utf-8" />
 		<meta name="viewport"
 			content="user-scalable=0, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, interactive-widget=resizes-content" />
+		<link rel="dns-prefetch" href="https://pagead2.googlesyndication.com">
+		<link rel="dns-prefetch" href="https://googleads.g.doubleclick.net">
 		<style>
 			body {
 				margin: 0px;
@@ -43,7 +45,7 @@
 
 				function startGame() {
 					if (!window.Ctrr || typeof window.Ctrr.main !== "function") {
-						showError("Ctrr.main 未找到，请确�?ctrr.js 可用�?);
+						showError("Ctrr.main 未找到，请确�?ctrr.js 可用�?);
 						return;
 					}
 					window.Ctrr.main(window.famobi.getCurrentLanguage());
@@ -53,7 +55,7 @@
 				s.src = "ctrr.js";
 				s.onload = startGame;
 				s.onerror = function () {
-					showError("ctrr.js 加载失败，请确认文件存在�?);
+					showError("ctrr.js 加载失败，请确认文件存在�?);
 				};
 				document.head.appendChild(s);
 			})();

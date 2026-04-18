@@ -49,6 +49,12 @@
                 background-color: white;
             }
     </style>
+    <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com">
+    <link rel="dns-prefetch" href="https://googleads.g.doubleclick.net">
+    <link rel="preload" href="Build/Build.loader.js" as="script">
+    <link rel="preload" href="Build/ac77eb71d9c028fc76337272ca3dea12.js.unityweb" as="fetch" crossorigin>
+    <link rel="preload" href="Build/c9168b14c2114d60fa3af4cc60b798c6.wasm.unityweb" as="fetch" crossorigin>
+    <link rel="preload" href="Build/e764027ece7a83467d37a91ef070ca7f.data.unityweb.br" as="fetch" crossorigin>
     <script>
         // 脱离 Famobi 环境时提供兼容实现，避免 Unity 桥接调用报错
         (function ensureGameInterface() {
@@ -143,7 +149,7 @@
             loaderScript.src = "Build/Build.loader.js";
             loaderScript.onload = startUnityGame;
             loaderScript.onerror = function () {
-                console.error("Unity loader 加载失败，请确认 Build/Build.loader.js 存在�?);
+                console.error("Unity loader 加载失败，请确认 Build/Build.loader.js 存在�?);
             };
             document.head.appendChild(loaderScript);
         })();

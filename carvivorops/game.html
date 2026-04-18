@@ -15,13 +15,19 @@
       .fullscreen-canvas {
         background: #242424;
         width: 100%;
-        height: calc(100% - 50px);
+        height: 100%;
         position: absolute;
         top: 0px;
         left: 0px;
       }
     </style>
     <link rel="preconnect" href="https://play.delmagames.com" crossorigin>
+    <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com">
+    <link rel="dns-prefetch" href="https://googleads.g.doubleclick.net">
+    <link rel="preload" href="Build/8ced22c567816a283b515d9835d5b55d.loader.js" as="script">
+    <link rel="preload" href="Build/870489564e59aea775d6d2aedba5e6df.framework.js.unityweb.br" as="fetch" crossorigin>
+    <link rel="preload" href="Build/e30cac570c2cb96dfc9f71b79ab8fc88.wasm.unityweb.br" as="fetch" crossorigin>
+    <link rel="preload" href="Build/0aeff29e24e9d7a30a02ffcbf9687a70.data.unityweb.br" as="fetch" crossorigin>
   </head>
   <body>
     <script async src="https://play.delmagames.com/DelmaGameSDK2.0.js"></script>
@@ -34,7 +40,7 @@
       </div>
       <div id="loading-percent" style="color:#aaa;font-family:Arial,sans-serif;font-size:14px;margin-top:10px;">0%</div>
     </div>
-    <script src="./playgama-bridge.js"></script>
+    <script async src="./playgama-bridge.js"></script>
     <script>
       if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
         let meta = document.createElement("meta");
@@ -71,10 +77,11 @@
         createUnityInstance(
           canvas,
           {
-            dataUrl: "Build/0aeff29e24e9d7a30a02ffcbf9687a70.data.unityweb",
+            dataUrl: "Build/0aeff29e24e9d7a30a02ffcbf9687a70.data.unityweb.br",
             frameworkUrl:
-              "Build/870489564e59aea775d6d2aedba5e6df.framework.js.unityweb",
-            codeUrl: "Build/e30cac570c2cb96dfc9f71b79ab8fc88.wasm.unityweb",
+              "Build/870489564e59aea775d6d2aedba5e6df.framework.js.unityweb.br",
+            codeUrl: "Build/e30cac570c2cb96dfc9f71b79ab8fc88.wasm.unityweb.br",
+            compressionFormat: "brotli",
             streamingAssetsUrl: "StreamingAssets",
             companyName: "Void Night",
             productName: "Survivor Ops",
@@ -99,8 +106,27 @@
       };
       document.body.appendChild(unityLoader);
 
-      // Bridge initialization runs in parallel - doesn't block Unity loading
-      if (typeof bridge !== "undefined") {
+      // Dynamically adjust canvas height for banner when it appears
+      function adjustCanvasForBanner() {
+        let canvas = document.getElementById("canvas");
+        if (!canvas) return;
+        let banner = document.getElementById("delma-banner-container");
+        if (banner && banner.offsetHeight > 0) {
+          canvas.style.height = "calc(100% - " + banner.offsetHeight + "px)";
+        } else {
+          canvas.style.height = "100%";
+        }
+      }
+      let bannerObs = new MutationObserver(adjustCanvasForBanner);
+      let _bc = document.getElementById("delma-banner-container");
+      if (_bc) {
+        bannerObs.observe(_bc, { attributes: true, childList: true, subtree: true });
+        _bc.addEventListener("resize", adjustCanvasForBanner);
+      }
+      window.addEventListener("resize", adjustCanvasForBanner);
+
+      // Bridge initialization - async with polling wait
+      function initBridge() {
         bridge.initialize().then(() => {
           bridge.advertisement.on("banner_state_changed", (state) =>
             sendMessageToUnity("OnBannerStateChanged", state),
@@ -115,6 +141,17 @@
             sendMessageToUnity("OnVisibilityStateChanged", state),
           );
         }).catch((error) => console.error(error));
+      }
+      if (typeof bridge !== "undefined") {
+        initBridge();
+      } else {
+        let _bridgeCheck = setInterval(function() {
+          if (typeof bridge !== "undefined") {
+            clearInterval(_bridgeCheck);
+            initBridge();
+          }
+        }, 50);
+        setTimeout(function() { clearInterval(_bridgeCheck); }, 5000);
       }
 
       // platform
@@ -352,8 +389,8 @@
         sendMessageToUnity("OnDeleteStorageDataSuccess", key);
       };
 
-      // advertisement - 使用 DelmaGameSDK �?MiniGameAds
-      // 注意：window.showBanner �?window.hideBanner 已由 DelmaGameSDK2.0.js 自动定义
+      // advertisement - 使用 DelmaGameSDK �?MiniGameAds
+      // 注意：window.showBanner �?window.hideBanner 已由 DelmaGameSDK2.0.js 自动定义
       var _interstitialState = "loaded";
       
       window.getInterstitialState = function () {
