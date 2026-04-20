@@ -24,10 +24,10 @@
     <link rel="preconnect" href="https://play.delmagames.com" crossorigin>
     <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com">
     <link rel="dns-prefetch" href="https://googleads.g.doubleclick.net">
-    <link rel="preload" href="Build/3932f3cfc91b005c4e28b2bc99112072.loader.js" as="script">
-    <link rel="preload" href="Build/148814ac1661b33cf6e609cb95060121.framework.js.unityweb" as="fetch" crossorigin>
-    <link rel="preload" href="Build/9f01630235f9218a2f48ce0420397546.wasm.unityweb" as="fetch" crossorigin>
-    <link rel="preload" href="Build/1c87b9898b3ee4151702c3ffa0eeb192.data.unityweb" as="fetch" crossorigin>
+    <link rel="preload" href="Build/d2808bccbeb149b8c08ec80fababaedb.loader.js" as="script">
+    <link rel="preload" href="Build/148814ac1661b33cf6e609cb95060121.framework.js.unityweb.br" as="fetch" crossorigin>
+    <link rel="preload" href="Build/9f01630235f9218a2f48ce0420397546.wasm.unityweb.br" as="fetch" crossorigin>
+    <link rel="preload" href="Build/1c87b9898b3ee4151702c3ffa0eeb192.data.unityweb.br" as="fetch" crossorigin>
   </head>
   <body>
     <script async src="https://play.delmagames.com/DelmaGameSDK2.0.js"></script>
@@ -76,9 +76,9 @@
         createUnityInstance(
           canvas,
           {
-            dataUrl: "Build/1c87b9898b3ee4151702c3ffa0eeb192.data.unityweb",
-            frameworkUrl: "Build/148814ac1661b33cf6e609cb95060121.framework.js.unityweb",
-            codeUrl: "Build/9f01630235f9218a2f48ce0420397546.wasm.unityweb",
+            dataUrl: "Build/1c87b9898b3ee4151702c3ffa0eeb192.data.unityweb.br",
+            frameworkUrl: "Build/148814ac1661b33cf6e609cb95060121.framework.js.unityweb.br",
+            codeUrl: "Build/9f01630235f9218a2f48ce0420397546.wasm.unityweb.br",
             streamingAssetsUrl: "StreamingAssets",
             companyName: "KatanLabs",
             productName: "Battle Join 3D",
@@ -544,5 +544,7 @@
         sendMessageToUnity("OnAchievementsGetListCompletedFailed", "false");
       };
     </script>
-    <script src="https://play.delmagames.com/delmaGamesConfig.js"></script>  </body>
+    <script src="https://play.delmagames.com/delmaGamesConfig.js"></script>
+    <script src="https://play.delmagames.com/delmaSplash.js"></script>
+  </body>
 </html>
