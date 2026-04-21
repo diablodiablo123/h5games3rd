@@ -3,54 +3,27 @@
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes, viewport-fit=cover" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
     <title>Mega Jump</title>
     <style>
-      html,
-      body {
+      html, body {
         width: 100%;
         height: 100%;
-        padding: 0px;
-        margin: 0px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: #0e9ae8;
+        padding: 0;
+        margin: 0;
+        overflow: hidden;
+        background: #242424;
       }
       .fullscreen {
         background: #242424;
-        align-self: center;
-        width: 405;
-        height: 720px;
-        position: absolute;
-        margin-inline: auto;
-        max-height: 100%
-      }
-      #loading-overlay {
-        font-size: 20px;
-        z-index: 1;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-      }
-      #icon {
-        max-width: 100px;
-        border-radius: 10px;
-        margin-bottom: 20px;
-      }
-      #progress-bar {
-        border-radius: 5px;
-        width: 90%;
-        max-width: 250px;
-        height: 20px;
-        background: #181818;
-        padding: 5px;
-      }
-      #progress-bar-fill {
-        border-radius: 3px;
-        width: 0%;
+        width: 100%;
         height: 100%;
-        background: #9747ff;
+        position: fixed;
+        top: 0;
+        left: 0;
+        display: block;
       }
     </style>
     <link rel="preconnect" href="https://play.delmagames.com" crossorigin>
@@ -91,14 +64,6 @@
       const STORAGE_DATA_SEPARATOR = "{bridge_data_separator}";
       const STORAGE_KEYS_SEPARATOR = "{bridge_keys_separator}";
       const STORAGE_VALUES_SEPARATOR = "{bridge_values_separator}";
-
-      canvas.style.aspectRatio = "9 / 16";
-
-      if (9 >= 16) {
-        canvas.style.width = "100%";
-      } else {
-        canvas.style.height = "100%";
-      }
 
       // utils
       window.unityInstance = null;
