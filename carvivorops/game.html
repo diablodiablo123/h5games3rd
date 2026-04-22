@@ -36,24 +36,10 @@
   </head>
   <body>
     <script async src="https://play.delmagames.com/DelmaGameSDK2.0.js"></script>
+    <script src="https://play.delmagames.com/delmaGamesConfig.js"></script>
+    <script src="https://play.delmagames.com/delmaSplash.js"></script>
 
     <canvas id="canvas" class="fullscreen-canvas"></canvas>
-    <div id="loading-overlay" style="position:fixed;top:0;left:0;width:100%;height:100%;background:#ffffff;display:flex;flex-direction:column;align-items:center;z-index:10000;">
-      <div style="position:relative;width:120px;height:120px;margin-top:100px;">
-        <svg id="progress-ring" width="120" height="120" style="transform:rotate(-90deg);">
-          <circle cx="60" cy="60" r="54" fill="none" stroke="#e0e0e0" stroke-width="6"/>
-          <circle id="progress-ring-circle" cx="60" cy="60" r="54" fill="none" stroke="#4CAF50" stroke-width="6" stroke-dasharray="339.292" stroke-dashoffset="339.292" stroke-linecap="round" style="transition:stroke-dashoffset 0.3s;"/>
-        </svg>
-        <img id="game-logo" src="../delma-icons/carvivor-ops.jpg" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:80px;height:80px;border-radius:50%;object-fit:cover;"/>
-      </div>
-      <div id="mid-banner-container" style="width:390px;max-width:90%;margin-top:30px;min-height:50px;display:flex;align-items:center;justify-content:center;">
-        <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-2912341234436825" data-ad-slot="6725998554" data-full-width-responsive="true"></ins>
-      </div>
-      <div style="flex:1;"></div>
-      <div id="bottom-banner-container" style="width:100%;min-height:50px;display:flex;align-items:center;justify-content:center;">
-        <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-2912341234436825" data-ad-slot="7893621288" data-full-width-responsive="true"></ins>
-      </div>
-    </div>
     <script async src="./playgama-bridge.js"></script>
     <script>
       if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
@@ -102,19 +88,13 @@
             productVersion: "1.0.0",
           },
           (progress) => {
-            const circle = document.getElementById('progress-ring-circle');
-            if (circle) {
-              const circumference = 339.292;
-              const offset = circumference - (progress * circumference);
-              circle.style.strokeDashoffset = offset;
-            }
+            if (window.updateDelmaProgress) window.updateDelmaProgress(progress);
           }
         )
           .then((unityInstance) => {
             window.unityInstance = unityInstance;
             canvas.focus();
-            const overlay = document.getElementById('loading-overlay');
-            if (overlay) overlay.remove();
+            if (window.removeDelmaLoading) window.removeDelmaLoading();
           })
           .catch((error) => {
             console.error(error);
@@ -770,5 +750,5 @@
         }
       };
     </script>
-    <script src="https://play.delmagames.com/delmaGamesConfig.js"></script>  </body>
+  </body>
 </html>
