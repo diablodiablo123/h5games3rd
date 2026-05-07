@@ -1,0 +1,126 @@
+<!doctype html>
+<html>
+<head>
+    <meta name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover' />
+    <meta charset='utf-8'>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <link rel="manifest" href="manifest.json">
+    <style></style>
+    <title>Go Around</title>
+    <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com">
+    <link rel="dns-prefetch" href="https://googleads.g.doubleclick.net">
+    <link rel="preload" href="playcanvas-stable.min.js" as="script">
+    <link rel="preload" href="__settings__.js" as="script">
+    <script src="https://play.delmagames.com/delmaGamesConfig.js"></script>
+    <script src="https://play.delmagames.com/delmaSplash.js"></script>
+
+    <script>
+        (function () {
+          function noop() {}
+          function resolved(v) { return Promise.resolve(v); }
+
+          var memStore = {};
+          var safeStorage = {
+            getItem: function (k) {
+              try { return localStorage.getItem(k); } catch (e) { return memStore[k] || null; }
+            },
+            setItem: function (k, v) {
+              try { localStorage.setItem(k, v); } catch (e) { memStore[k] = String(v); }
+            },
+            removeItem: function (k) {
+              try { localStorage.removeItem(k); } catch (e) {}
+              delete memStore[k];
+            }
+          };
+
+          var famobi = window.famobi || {};
+          famobi.localStorage = famobi.localStorage || safeStorage;
+          famobi.onRequest = famobi.onRequest || noop;
+          famobi.hasFeature = famobi.hasFeature || function () { return false; };
+          famobi.getCurrentLanguage = famobi.getCurrentLanguage || function () {
+            return (navigator.language || "en").toLowerCase();
+          };
+          window.famobi = famobi;
+
+          var analytics = window.famobi_analytics || {};
+          analytics.trackEvent = analytics.trackEvent || function () { return resolved(null); };
+          window.famobi_analytics = analytics;
+
+          var scripts = [
+            "playcanvas-stable.min.js",
+            "__settings__.js",
+            "__modules__.js",
+            "__start__.js",
+            "__loading__.js"
+          ];
+
+          function loadSequentially(i) {
+            if (i >= scripts.length) {
+              if (window.removeDelmaLoading) window.removeDelmaLoading();
+              return;
+            }
+            var s = document.createElement("script");
+            s.src = scripts[i];
+            s.onload = function () {
+              loadSequentially(i + 1);
+            };
+            s.onerror = function () {
+              console.error("脚本加载失败:", scripts[i]);
+            };
+            document.head.appendChild(s);
+          }
+
+          loadSequentially(0);
+        })();
+    </script>
+
+</head>
+<body>
+  <script type="application/javascript" src="https://play.delmagames.com/DelmaGameSDK2.0.js"></script>
+
+  <script>
+      var _interstitialState = "loaded";
+      window.getInterstitialState = function () { return _interstitialState; };
+      window.getIsBannerSupported = function () { return "true"; };
+      window.getIsInterstitialSupported = function () { return "true"; };
+      window.getMinimumDelayBetweenInterstitial = function () { return "30"; };
+      window.setMinimumDelayBetweenInterstitial = function () {};
+      window.getIsRewardedSupported = function () { return "true"; };
+      window.getRewardedPlacement = function () { return ""; };
+      window.showInterstitial = function () {
+        if (window.MiniGameAds) {
+          _interstitialState = "loading";
+          MiniGameAds.showInterstitial({
+            beforeAd: function () { _interstitialState = "opened"; },
+            afterAd: function () { _interstitialState = "closed"; },
+            adBreakDone: function () { _interstitialState = "loaded"; },
+          }).catch(function (e) { console.warn("[Ads] interstitial failed:", e); _interstitialState = "loaded"; });
+        }
+      };
+      window.showRewarded = function () {
+        if (window.MiniGameAds) {
+          var rewardedPromise = MiniGameAds.showRewarded({
+            beforeAd: function () {},
+            afterAd: function () {},
+            adBreakDone: function () {},
+            beforeReward: function (showAdFn) { showAdFn(); },
+            adDismissed: function () {},
+            adViewed: function () {},
+          });
+          if (rewardedPromise && typeof rewardedPromise.catch === "function") {
+            rewardedPromise.catch(function (e) { console.warn("[Ads] rewarded failed:", e); });
+          }
+        }
+      };
+      window.checkAdBlock = function () {
+        var testAd = document.createElement("div");
+        testAd.innerHTML = "&nbsp;";
+        testAd.className = "adsbox";
+        document.body.appendChild(testAd);
+        var isBlocked = testAd.offsetHeight === 0;
+        document.body.removeChild(testAd);
+        return !isBlocked;
+      };
+    </script>
+</body>
+</html>

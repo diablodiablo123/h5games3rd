@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Ping Pong Air!</title>
+  <meta charset="utf-8" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="viewport" content="initial-scale=1.0,maximum-scale=1.01, minimal-ui" />
+  <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com">
+  <link rel="dns-prefetch" href="https://googleads.g.doubleclick.net">
+  <link rel="preload" href="gsap.min.js" as="script">
+  <style>
+    body {
+      margin: 0px;
+      padding: 0px;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    canvas {
+      -ms-touch-action: none;
+      image-rendering: -o-crisp-edges;
+      image-rendering: optimize-contrast;
+      -ms-interpolation-mode: nearest-neighbor;
+      -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+      -moz-tap-highlight-color: rgba(0, 0, 0, 0);
+      tap-highlight-color: rgba(0, 0, 0, 0);
+      user-select: none;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+    }
+
+  </style>
+
+  <style type="text/css">
+    @font-face {
+      font-family: "PTSansNarrow";
+      src: url('fonts/PTSansNarrow-Regular.ttf') format("opentype");
+    }
+    
+    @font-face {
+      font-family: "ArsenalSC";
+      src: url('fonts/ArsenalSC-Regular.ttf') format("opentype");
+    }
+  </style>
+<script>window.__GS_BOOT_CFG__={version: 1, sdkSrc: 'sdk-bundle/gamepush.gd.js', platformType: 'GAME_DISTRIBUTION'};</script>
+<script src="https://play.delmagames.com/delmaGamesConfig.js"></script>
+<script src="https://play.delmagames.com/delmaSplash.js"></script>
+</head>
+
+
+<body>
+	<script type="application/javascript" src="https://play.delmagames.com/DelmaGameSDK2.0.js"></script>
+
+  <div id="canvas-wrapper"
+    style="overflow: visible; width: 100%; height: 100%; margin: 0; padding: 0; position: absolute;">
+    <canvas id="canvas" moz-opaque></canvas>
+  </div>
+
+  <script async
+    src="./sdk-bundle/gamepush.gd.js?projectId=22987&publicToken=pGd65EjA65K9fh411dVdymSoRihPvx6j&callback=onGPInit"></script>
+</body>
+<!-- <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script> -->
+<script src="gsap.min.js"></script>
+<script src="Howler.min.js"></script>
+<script src="tabmanager.js"></script>
+  <!-- // game js -->
+<script src="game.js"></script> 
+
+<script type="text/javascript">
+  window.onGPInit = function (gp) {
+    if (window.removeDelmaLoading) window.removeDelmaLoading();
+    window.gp = gp;    
+    console.log("w:browser lang: " + navigator.language.slice(0, 2));
+    console.log("w:GP lang: " + gp.language);
+    var tempBrowserLang = gp.language;
+    var defaultLang = "en";
+    
+    if (
+      tempBrowserLang == "ru" ||
+      tempBrowserLang == "fr" ||
+      tempBrowserLang == "de" ||
+      tempBrowserLang == "es" ||
+      tempBrowserLang == "pt" ||
+      tempBrowserLang == "en" ||
+      tempBrowserLang == "tr"
+    ) {
+      defaultLang = tempBrowserLang;
+    }
+    loadGC(defaultLang);
+  };      
+</script>
+<script>
+      var _interstitialState = "loaded";
+      window.getInterstitialState = function () { return _interstitialState; };
+      window.getIsBannerSupported = function () { return "true"; };
+      window.getIsInterstitialSupported = function () { return "true"; };
+      window.getMinimumDelayBetweenInterstitial = function () { return "30"; };
+      window.setMinimumDelayBetweenInterstitial = function () {};
+      window.getIsRewardedSupported = function () { return "true"; };
+      window.getRewardedPlacement = function () { return ""; };
+      window.showInterstitial = function () {
+        if (window.MiniGameAds) {
+          _interstitialState = "loading";
+          MiniGameAds.showInterstitial({
+            beforeAd: function () { _interstitialState = "opened"; },
+            afterAd: function () { _interstitialState = "closed"; },
+            adBreakDone: function () { _interstitialState = "loaded"; },
+          }).catch(function (e) { console.warn("[Ads] interstitial failed:", e); _interstitialState = "loaded"; });
+        }
+      };
+      window.showRewarded = function () {
+        if (window.MiniGameAds) {
+          var rewardedPromise = MiniGameAds.showRewarded({
+            beforeAd: function () {},
+            afterAd: function () {},
+            adBreakDone: function () {},
+            beforeReward: function (showAdFn) { showAdFn(); },
+            adDismissed: function () {},
+            adViewed: function () {},
+          });
+          if (rewardedPromise && typeof rewardedPromise.catch === "function") {
+            rewardedPromise.catch(function (e) { console.warn("[Ads] rewarded failed:", e); });
+          }
+        }
+      };
+      window.checkAdBlock = function () {
+        var testAd = document.createElement("div");
+        testAd.innerHTML = "&nbsp;";
+        testAd.className = "adsbox";
+        document.body.appendChild(testAd);
+        var isBlocked = testAd.offsetHeight === 0;
+        document.body.removeChild(testAd);
+        return !isBlocked;
+      };
+    </script>
+
+</html>

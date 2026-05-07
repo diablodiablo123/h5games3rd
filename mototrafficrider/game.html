@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>Moto Traffic Rider</title>
+	<style>
+		html,
+		body {
+		background: #000 url('image.jpg') no-repeat center center fixed;
+		background-size: cover
+		}
+
+		div#gameContainer {
+			background: transparent !important;
+			position: absolute;
+		}
+
+		div#gameContainer canvas {
+			position: absolute;
+		}
+
+		div#gameContainer canvas[data-pixel-art="true"] {
+			position: absolute;
+			image-rendering: optimizeSpeed;
+			image-rendering: -webkit-crisp-edges;
+			image-rendering: -moz-crisp-edges;
+			image-rendering: -o-crisp-edges;
+			image-rendering: crisp-edges;
+			image-rendering: -webkit-optimize-contrast;
+			image-rendering: optimize-contrast;
+			image-rendering: pixelated;
+			-ms-interpolation-mode: nearest-neighbor;
+		}
+	</style>
+	<link rel="dns-prefetch" href="https://pagead2.googlesyndication.com">
+	<link rel="dns-prefetch" href="https://googleads.g.doubleclick.net">
+	<link rel="preload" href="Build/MotoTrafficRider12.loader.js" as="script">
+	<link rel="preload" href="Build/MotoTrafficRider12.framework.js.unityweb" as="fetch" crossorigin>
+	<link rel="preload" href="Build/MotoTrafficRider12.wasm.unityweb" as="fetch" crossorigin>
+	<link rel="preload" href="Build/MotoTrafficRider12.data.unityweb" as="fetch" crossorigin>
+	<script src="https://play.delmagames.com/delmaGamesConfig.js"></script>
+	<script src="https://play.delmagames.com/delmaSplash.js"></script>
+</head>
+
+<body>
+	<script type="application/javascript" src="https://play.delmagames.com/DelmaGameSDK2.0.js"></script>
+
+	<div id="gameContainer">
+		<canvas id="unity-canvas" data-pixel-art=""></canvas>
+		<script src="Build/MotoTrafficRider12.loader.js"></script>
+		<script>
+			var canvas = document.querySelector("#unity-canvas");
+			var config = {
+				dataUrl: "Build/MotoTrafficRider12.data.unityweb",
+				frameworkUrl: "Build/MotoTrafficRider12.framework.js.unityweb",
+				codeUrl: "Build/MotoTrafficRider12.wasm.unityweb",
+				streamingAssetsUrl: "StreamingAssets",
+				companyName: "Fuego! Games",
+				productName: "Moto Traffic Rider",
+				productVersion: "1",
+			};
+			var scaleToFit;
+			try {
+				scaleToFit = !!JSON.parse("true");
+			} catch (e) {
+				scaleToFit = true;
+			}
+			function progressHandler(progress) {
+				if (window.updateDelmaProgress) window.updateDelmaProgress(progress);
+				var percent = progress * 100 + '%';
+				canvas.style.background = 'linear-gradient(to right, white, white ' + percent + ', transparent ' + percent + ', transparent) no-repeat center';
+				canvas.style.backgroundSize = '100% 1rem';
+			}
+			function onResize() {
+				var container = canvas.parentElement;
+				var w;
+				var h;
+
+				if (scaleToFit) {
+					w = window.innerWidth;
+					h = window.innerHeight;
+
+					var r = window.innerHeight / window.innerWidth;
+
+					if (w * r > window.innerHeight) {
+						w = Math.min(w, Math.ceil(h / r));
+					}
+					h = Math.floor(w * r);
+				} else {
+					w = 960;
+					h = 600;
+				}
+
+				container.style.width = canvas.style.width = w + "px";
+				container.style.height = canvas.style.height = h + "px";
+				container.style.top = Math.floor((window.innerHeight - h) / 2) + "px";
+				container.style.left = Math.floor((window.innerWidth - w) / 2) + "px";
+			}
+			createUnityInstance(canvas, config, progressHandler).then(function (instance) {
+				if (window.removeDelmaLoading) window.removeDelmaLoading();
+				canvas = instance.Module.canvas;
+				onResize();
+			});
+			window.addEventListener('resize', onResize);
+			onResize();
+
+			if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+				// Mobile device style: fill the whole browser client area with the game canvas:
+				const meta = document.createElement('meta');
+				meta.name = 'viewport';
+				meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
+				document.getElementsByTagName('head')[0].appendChild(meta);
+			}
+		</script>
+	</div>
+    <script>
+      var _interstitialState = "loaded";
+      window.getInterstitialState = function () { return _interstitialState; };
+      window.getIsBannerSupported = function () { return "true"; };
+      window.getIsInterstitialSupported = function () { return "true"; };
+      window.getMinimumDelayBetweenInterstitial = function () { return "30"; };
+      window.setMinimumDelayBetweenInterstitial = function () {};
+      window.getIsRewardedSupported = function () { return "true"; };
+      window.getRewardedPlacement = function () { return ""; };
+      window.showInterstitial = function () {
+        if (window.MiniGameAds) {
+          _interstitialState = "loading";
+          MiniGameAds.showInterstitial({
+            beforeAd: function () { _interstitialState = "opened"; },
+            afterAd: function () { _interstitialState = "closed"; },
+            adBreakDone: function () { _interstitialState = "loaded"; },
+          }).catch(function (e) { console.warn("[Ads] interstitial failed:", e); _interstitialState = "loaded"; });
+        }
+      };
+      window.showRewarded = function () {
+        if (window.MiniGameAds) {
+          var rewardedPromise = MiniGameAds.showRewarded({
+            beforeAd: function () {},
+            afterAd: function () {},
+            adBreakDone: function () {},
+            beforeReward: function (showAdFn) { showAdFn(); },
+            adDismissed: function () {},
+            adViewed: function () {},
+          });
+          if (rewardedPromise && typeof rewardedPromise.catch === "function") {
+            rewardedPromise.catch(function (e) { console.warn("[Ads] rewarded failed:", e); });
+          }
+        }
+      };
+      window.checkAdBlock = function () {
+        var testAd = document.createElement("div");
+        testAd.innerHTML = "&nbsp;";
+        testAd.className = "adsbox";
+        document.body.appendChild(testAd);
+        var isBlocked = testAd.offsetHeight === 0;
+        document.body.removeChild(testAd);
+        return !isBlocked;
+      };
+    </script>
+</body>
+
+</html>
